@@ -1,8 +1,6 @@
 import asyncio
 import websockets
 
-users = set()
-
 class Client:
     def __init__(self, ws, path):
         self.ws = ws
