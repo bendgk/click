@@ -2,14 +2,13 @@ var ws = new WebSocket("ws://96.239.90.68:25565");
 
 ws.onmessage = function(event) {
     console.log(event);
+    //$.getScript("js/game.js")
 };
 
-ws.onopen = function(event) {
-    console.log("closing")
-    ws.send("register");
-};
+function login() {
+    user = $('[name="user"]')[0].value;
+    pass = $('[name="passwd"]')[0].value;
 
-function abc() {
-    ws.send("click");
-    console.log("click");
+    data =  JSON.stringify( {"login": {"user": user, "pass": pass}} );
+    ws.send(data);
 }

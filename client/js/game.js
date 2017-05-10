@@ -1,3 +1,4 @@
+(function() {
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 var Application = PIXI.Application,
@@ -61,3 +62,4 @@ function moveDrag() {
         this.initMousePosition = this.data.getLocalPosition(this.parent);
     }
 }
+})();
