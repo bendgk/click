@@ -3,18 +3,16 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="google-signin-client_id" content="37963111071-thrs26sqprcao2aphr886i5jr95mgv3a.apps.googleusercontent.com">
 
   <title>Click</title>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.1/pixi.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="js/sockets.js"></script>
 </head>
 
 <body>
-    <div id="login">
-        Username: <input type="text" name="user"><br>
-        Password: <input type="password" name="passwd"><br>
-        <button onclick="login()">Login</button>
-    </div>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
 </body>
 </html>
