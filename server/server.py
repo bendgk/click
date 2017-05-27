@@ -3,6 +3,12 @@
 import asyncio, websockets, json
 from oauth2client import client, crypt
 
+class Game:
+    def __init__(self, global_clicks):
+        with open('users.json') as file_users:
+            self.global_clicks = global_clicks
+            file_users.close()
+
 class Player:
     def __init__(self, userid, data):
         self.userid = userid
@@ -41,11 +47,7 @@ class Client:
             self.ws.close()
 
             with open('users.json', 'w') as f:
-                user = json.dump({
-                    self.player.userid: {
-                        'clicks': self.player.clicks
-                    }
-                }, f)
+                user = json.dump(server.users, f)
                 f.close()
 
     async def login(self, data):
@@ -151,4 +153,5 @@ class Server(websockets.server.WebSocketServerProtocol):
 
 if __name__ == "__main__":
     server = Server()
+    game = Game()
     server.run()
