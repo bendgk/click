@@ -91,5 +91,5 @@ ENV/
 # JSON
 .json
 
-#Batch
+# Batch
 .bat
