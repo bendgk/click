@@ -26,12 +26,27 @@ class Client:
                 method = getattr(self, key)
                 execute = asyncio.ensure_future(method(data))
 
+                try:
+                    server.users[self.player.userid] = {
+                        'clicks': self.player.clicks
+                    }
+                except:
+                    pass
+
         except:
             pass
 
         finally:
             print(self.player.userid, "disconnected")
             self.ws.close()
+
+            with open('users.json', 'w') as f:
+                user = json.dump({
+                    self.player.userid: {
+                        'clicks': self.player.clicks
+                    }
+                }, f)
+                f.close()
 
     async def login(self, data):
         try:
@@ -42,6 +57,8 @@ class Client:
 
             userid = idinfo['sub']
 
+            print(userid, "connected")
+
             if userid not in server.users:
                 #Creation of user in users.json
                 server.users[userid] = {'clicks': 0}
@@ -50,17 +67,27 @@ class Client:
                     json.dump(server.users, f)
                     f.close()
 
+            with open('users.json') as file_users:
+                server.users = json.load(file_users)
+                file_users.close()
+
+            print(server.users)
+
             self.player = Player(userid, server.users[userid])
-            await self.ws.send(json.dumps(server.users[userid]))
+
+            print(server.users, "DONE")
+
+            await self.ws.send(json.dumps({'auth': True}))
+            await self.ws.send(json.dumps(self.player, default = lambda o: o.__dict__))
 
         except crypt.AppIdentityError:
             print("failed to log-in")
             await self.ws.send(json.dumps({'auth': False}))
 
     async def click(self, data):
-        player.clicks += 1
-        await asyncio.sleep(0.1)
-        self.ws.send(json.dumps({'clicks': player.clicks}))
+        print(self.player.userid, "clicked")
+        self.player.clicks += 1
+        await self.ws.send(json.dumps(self.player, default = lambda o: o.__dict__))
 
 
     """
@@ -104,14 +131,17 @@ class Client:
 
 class Server(websockets.server.WebSocketServerProtocol):
     def __init__(self):
-        with open('users.json') as users:
-            self.users = json.load(users)
-            users.close()
+        with open('users.json') as file_users:
+            self.users = json.load(file_users)
+            file_users.close()
+
+        print(self.users)
 
     async def handler(self, ws, path):
         client = Client(ws, path)
         listener = asyncio.ensure_future(client.listen())
         await asyncio.wait([listener])
+        del client
 
     def run(self, host='192.168.1.9', port=25565):
         start_server = websockets.serve(self.handler, host, port)
