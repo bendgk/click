@@ -14,16 +14,24 @@ class Client:
         self.path = path
 
     async def listen(self):
-        while True:
-            #Process data from server to usable format
-            data = await self.ws.recv()
-            data = json.loads(data)
-            key = list(data.keys())[0]
-            data = data[key]
+        try:
+            while self.ws.open:
+                #Process data from server to usable format
+                data = await self.ws.recv()
+                data = json.loads(data)
+                key = list(data.keys())[0]
+                data = data[key]
 
-            #Call appropriate method
-            method = getattr(self, key)
-            execute = asyncio.ensure_future(method(data))
+                #Call appropriate method
+                method = getattr(self, key)
+                execute = asyncio.ensure_future(method(data))
+
+        except:
+            pass
+
+        finally:
+            print(self.player.userid, "disconnected")
+            self.ws.close()
 
     async def login(self, data):
         try:
@@ -42,10 +50,11 @@ class Client:
                     json.dump(server.users, f)
                     f.close()
 
-            player = Player(usserid, server.users[userid])
+            self.player = Player(userid, server.users[userid])
             await self.ws.send(json.dumps(server.users[userid]))
 
         except crypt.AppIdentityError:
+            print("failed to log-in")
             await self.ws.send(json.dumps({'auth': False}))
 
     async def click(self, data):
