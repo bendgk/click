@@ -1,4 +1,3 @@
-(function() {
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 var Application = PIXI.Application,
@@ -7,6 +6,7 @@ var Application = PIXI.Application,
     loader = PIXI.loader,
     resources = PIXI.loader.resources,
     Sprite = PIXI.Sprite;
+    TilingSprite = PIXI.extras.TilingSprite;
 
 var app = new Application($(window).width() - 20, $(window).height() - 20, { backgroundColor: 0xAAAAAA });
 
@@ -16,7 +16,7 @@ window.onresize = function (event) {
 };
 document.body.appendChild(app.view);
 
-var main = Sprite.fromImage('res/square.png');
+var main = TilingSprite.fromImage('res/square.png');
 
 main.anchor.set(0.5);
 main.x = 0; main.y = 0;
@@ -33,8 +33,13 @@ main
 
 app.stage.addChild(main);
 
-function startDrag(event) {
+function click() {
     main.width += 10; main.height += 10;
+    ws.send(JSON.stringify( {"click":"1"} ) );
+}
+
+function startDrag(event) {
+    click();
 
     this.data = event.data;
     this.dragging = true;
@@ -62,4 +67,3 @@ function moveDrag() {
         this.initMousePosition = this.data.getLocalPosition(this.parent);
     }
 }
-})();
