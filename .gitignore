@@ -101,7 +101,7 @@ ENV/
 .mypy_cache/
 
 #JSON
-.json
+*.json
 
 #BATCH
-.bat
+*.bat
